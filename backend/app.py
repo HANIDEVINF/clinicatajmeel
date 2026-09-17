@@ -128,6 +128,68 @@ INITIAL_PATIENTS = [
     }
 ]
 
+# Root route informing about API endpoints and Frontend URL
+@app.route("/", methods=["GET"])
+def index():
+    if "text/html" in request.headers.get("Accept", ""):
+        status_badge = '<span style="color:#10b981;font-weight:bold;">Connecté ✅</span>' if mongo_connected else '<span style="color:#ef4444;font-weight:bold;">En attente de démarrage (Port 27017) ⚠️</span>'
+        return f"""
+        <!DOCTYPE html>
+        <html lang="fr">
+        <head>
+            <meta charset="UTF-8">
+            <title>API Backend Flask — Tadjmeel Clinica</title>
+            <style>
+                body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #1c1a17; color: #f5efe6; padding: 40px 20px; line-height: 1.6; margin: 0; }}
+                .card {{ max-width: 650px; margin: 0 auto; background: #26231e; border: 1px solid #c49b4b; border-radius: 16px; padding: 32px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }}
+                h1 {{ font-family: 'Georgia', serif; color: #e2c17d; margin-top: 0; font-size: 24px; }}
+                .btn {{ display: inline-block; background: #c49b4b; color: #1c1a17; font-weight: bold; padding: 12px 24px; border-radius: 8px; text-decoration: none; margin-top: 16px; }}
+                .btn:hover {{ background: #dfba6d; }}
+                code {{ background: #151412; padding: 3px 8px; border-radius: 4px; color: #f5dfb3; font-size: 13px; }}
+                ul {{ padding-left: 20px; }}
+                li {{ margin-bottom: 8px; }}
+            </style>
+        </head>
+        <body>
+            <div class="card">
+                <h1>Tadjmeel Clinica — API Backend Flask</h1>
+                <p>Le serveur backend Python est <strong>actif et fonctionnel</strong> sur le port 5000.</p>
+                <p><strong>Statut MongoDB :</strong> {status_badge}</p>
+                
+                <div style="margin: 24px 0; padding: 16px; background: #1b1916; border-radius: 8px; border-left: 4px solid #c49b4b;">
+                    <h3 style="margin: 0 0 8px 0; color: #e2c17d;">Pour ouvrir le site internet :</h3>
+                    <p style="margin: 0 0 12px 0; font-size: 14px;">Le site web React de la clinique tourne sur le port 3000 via <code>npm run dev</code>.</p>
+                    <a href="http://localhost:3000" class="btn" target="_blank">Ouvrir le Site Web (http://localhost:3000) &rarr;</a>
+                </div>
+
+                <h3>Points de terminaison API (REST) :</h3>
+                <ul style="font-size: 13px;">
+                    <li><a href="/api/health" style="color:#e2c17d;">/api/health</a> : Vérification de l'état système & MongoDB</li>
+                    <li><a href="/api/appointments" style="color:#e2c17d;">/api/appointments</a> : Liste des rendez-vous</li>
+                    <li><a href="/api/patients" style="color:#e2c17d;">/api/patients</a> : Fiches des patientes</li>
+                    <li><a href="/api/doctors" style="color:#e2c17d;">/api/doctors</a> : Équipe médicale</li>
+                </ul>
+            </div>
+        </body>
+        </html>
+        """
+
+    return jsonify({
+        "message": "Bienvenue sur l'API Backend Flask de Tadjmeel Clinica",
+        "frontend_url": "http://localhost:3000",
+        "instructions": "Le site web s'exécute sur le port 3000 avec la commande 'npm run dev'.",
+        "mongo_connected": mongo_connected,
+        "endpoints": {
+            "health": "/api/health",
+            "stats": "/api/stats",
+            "appointments": "/api/appointments",
+            "patients": "/api/patients",
+            "doctors": "/api/doctors",
+            "specialties": "/api/specialties",
+            "seed": "POST /api/seed"
+        }
+    })
+
 # Health check & system status
 @app.route("/api/health", methods=["GET"])
 def health_check():

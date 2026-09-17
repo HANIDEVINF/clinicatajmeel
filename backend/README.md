@@ -2,59 +2,50 @@
 
 Ce dossier contient le serveur API REST complet développé en **Python Flask** connecté à **MongoDB** (`mongodb://localhost:27017/`).
 
-## 📋 Prérequis
-1. **Python 3.9+** installé sur votre machine
-2. **MongoDB Community Server** installé et démarré en local sur `mongodb://localhost:27017/`
-
----
-
-## 🚀 Installation & Démarrage Rapide
+## 📋 Prérequis Rapides (Windows 10/11)
 
 ### 1. Démarrer MongoDB
 Assurez-vous que le service MongoDB tourne sur votre ordinateur :
-- **Sous Windows** : Démarrez le service `MongoDB` depuis *Services*, ou lancez :
+- **Installation en 1 commande (CMD en mode Administrateur)** :
   ```cmd
-  mongod --dbpath "C:\data\db"
+  winget install MongoDB.Server --accept-package-agreements --accept-source-agreements
   ```
-- **Sous Linux / macOS** :
-  ```bash
-  sudo systemctl start mongod
-  # ou avec brew sur macOS :
-  brew services start mongodb-community
+- **Démarrage du service (CMD en mode Administrateur)** :
+  ```cmd
+  net start MongoDB
   ```
 
-Vérifiez que MongoDB écoute bien sur `mongodb://localhost:27017/`.
+MongoDB écoute par défaut sur `mongodb://localhost:27017/`.
 
 ---
 
-### 2. Installer les dépendances Python
-Dans votre terminal, placez-vous dans le dossier `backend` :
-```bash
-cd backend
-python -m venv venv
+## 🚀 Démarrage du Backend Flask (Port 5000)
 
-# Activation de l'environnement virtuel :
-# Sur Windows :
+Dans votre terminal :
+```cmd
+cd C:\Users\HANI\Desktop\freelance\tajmeelclinic\backend
 venv\Scripts\activate
-# Sur Linux / macOS :
-source venv/bin/activate
-
-# Installation :
-pip install -r requirements.txt
-```
-
----
-
-### 3. Lancer le serveur Flask
-```bash
 python app.py
 ```
 Le serveur démarre sur **`http://localhost:5000`**.
 
 ---
 
-### 4. Initialiser la base de données (Seed automatique)
+## 💻 Démarrage du Frontend React (Port 3000)
+
+Dans un second terminal :
+```cmd
+cd C:\Users\HANI\Desktop\freelance\tajmeelclinic
+npm install --legacy-peer-deps
+npm run dev
+```
+Le site web s'ouvre sur **`http://localhost:3000`**.
+
+---
+
+## 🌿 Initialiser la base de données (Seed automatique)
 Lors du premier lancement, vous pouvez appeler l'endpoint de seed pour peupler les médecins, spécialités et patientes de test :
+- Directement en cliquant sur le bouton **« Initialiser Données »** dans l'interface Secrétariat du site web, ou via terminal :
 ```bash
 curl -X POST http://localhost:5000/api/seed
 ```
