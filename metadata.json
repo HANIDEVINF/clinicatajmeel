@@ -1,0 +1,6 @@
+{
+  "name": "Tadjmeel Clinica — Aesthetic Medicine & Laser",
+  "description": "Official website for Tadjmeel Clinica in Algiers: advanced Splendor X laser hair removal, HydraFacial, LifU LinearZ contouring, and medical aesthetic treatments.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
