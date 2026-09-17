@@ -60,6 +60,49 @@ export interface DoctorProfile {
   image: string;
 }
 
+export type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed';
+
+export interface Appointment {
+  id: string;
+  reference: string;
+  patientName: string;
+  phone: string;
+  city: string;
+  doctorName: string;
+  specialty: string;
+  treatmentName: string;
+  treatmentZone?: string;
+  date: string;
+  timeSlot: string;
+  notes?: string;
+  status: AppointmentStatus;
+  cancellationReason?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface PatientRecord {
+  id: string;
+  name: string;
+  phone: string;
+  city: string;
+  assignedDoctorName: string;
+  specialty: string;
+  phototype: string;
+  medicalNotes: string;
+  registeredAt: string;
+  totalAppointmentsCount?: number;
+  lastVisitDate?: string;
+}
+
+export interface ClinicSpecialty {
+  id: string;
+  name: string;
+  department: string;
+}
+
+export type PortalView = 'public' | 'worker' | 'doctor';
+
 export interface BookingData {
   serviceId: string;
   serviceName: string;

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Calendar, Clock, User, Phone, CheckCircle2, MessageCircle, MapPin, Sparkles, ChevronRight, ChevronLeft } from 'lucide-react';
 import { TREATMENTS, CLINIC_CONTACT, DOCTORS } from '../data/clinicData';
 import { Treatment, Language } from '../types';
+import { clinicApi } from '../services/clinicApi';
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -57,10 +58,31 @@ export const BookingModal: React.FC<BookingModalProps> = ({
     '13:30', '14:15', '15:00', '16:00', '17:00'
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const ref = 'TADJ-' + Math.floor(1000 + Math.random() * 9000);
     setReferenceId(ref);
+
+    // Persist to database (Flask / MongoDB / LocalStorage)
+    try {
+      await clinicApi.createAppointment({
+        reference: ref,
+        patientName: patientName.trim(),
+        phone: patientPhone.trim(),
+        city: patientCity.trim() || 'Alger',
+        doctorName: selectedDoctor,
+        specialty: activeTreatment.name,
+        treatmentName: activeTreatment.name,
+        treatmentZone: selectedService === 'laser-splendor-x' ? selectedZone : '',
+        date: selectedDate,
+        timeSlot: selectedTime,
+        notes: patientNotes.trim(),
+        status: 'pending'
+      });
+    } catch (err) {
+      console.error('Error creating appointment:', err);
+    }
+
     setIsSubmitted(true);
   };
 
