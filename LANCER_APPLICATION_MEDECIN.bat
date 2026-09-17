@@ -2,6 +2,9 @@
 title Tadjmeel Clinica — Console Médicale & Paramètres Soins
 color 0B
 
+:: Se positionner automatiquement dans le dossier du projet
+cd /d "%~dp0"
+
 echo ======================================================================
 echo       TADJMEEL CLINICA ALGER — LOGICIEL BUREAU MÉDECIN EXPERT
 echo ======================================================================
@@ -9,20 +12,17 @@ echo.
 echo Lancement de la Console Praticien, Dossiers Soins & Ordonnances...
 echo.
 
-:: Vérifier si le serveur Vite tourne sur le port 3000
-timeout /t 1 /nobreak >nul
-
-:: Tenter de lancer en mode Application autonome (sans barre d'adresse) avec Microsoft Edge (présent sur 100% des Windows 10/11)
+:: Vérifier si msedge existe pour lancer en mode Application de Bureau (fenêtre native sans barre d'adresse)
 where msedge >nul 2>nul
 if %errorlevel% equ 0 (
-    start "" msedge --app=http://localhost:3000/doctor.html --window-size=1400,900 --window-position=80,80
+    start "" msedge --app=http://localhost:3000/doctor.html --window-size=1440,900 --window-position=80,80
     exit
 )
 
-:: Sinon tenter Google Chrome
+:: Sinon avec Google Chrome
 where chrome >nul 2>nul
 if %errorlevel% equ 0 (
-    start "" chrome --app=http://localhost:3000/doctor.html --window-size=1400,900 --window-position=80,80
+    start "" chrome --app=http://localhost:3000/doctor.html --window-size=1440,900 --window-position=80,80
     exit
 )
 
