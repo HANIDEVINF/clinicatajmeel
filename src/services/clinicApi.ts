@@ -28,7 +28,25 @@ const SEED_APPOINTMENTS: Appointment[] = [
     date: new Date().toISOString().split('T')[0], // Today
     timeSlot: '10:30',
     notes: 'Séance 3/6. Phototype III. Excellente tolérance au protocole BLEND X.',
-    status: 'confirmed',
+    status: 'in_progress', // Currently in laser room!
+    priceDzd: 16500,
+    depositDzd: 5000,
+    isPaid: false,
+    phototype: 'Phototype III (Peau claire méditerranéenne)',
+    laserParams: {
+      fluenceJcm2: 18,
+      pulseMs: 30,
+      spotMm: '24x24 mm (Carré)',
+      alexRatio: 75,
+      yagRatio: 25,
+      coolingLevel: 'Cryo-Air Niveau 4',
+      shotsCount: 420
+    },
+    prescriptions: [
+      'Cicaplast Baume B5+ : application matin et soir pendant 4 jours',
+      'Écran Solaire Minéral SPF 50+ : impératif avant toute sortie',
+      'Pas de hammam, sauna ni gommage vigoureux pendant 72 heures'
+    ],
     createdAt: new Date(Date.now() - 86400000 * 2).toISOString()
   },
   {
@@ -43,8 +61,18 @@ const SEED_APPOINTMENTS: Appointment[] = [
     treatmentZone: 'Lèvres & Sillons',
     date: new Date().toISOString().split('T')[0], // Today
     timeSlot: '11:45',
-    notes: 'Consultation retouche et comblement naturel.',
-    status: 'confirmed',
+    notes: 'Patiente arrivée à l\'accueil. Prête pour passage en cabine consultation.',
+    status: 'arrived', // In waiting room right now!
+    priceDzd: 28000,
+    depositDzd: 0,
+    isPaid: false,
+    phototype: 'Phototype II',
+    injectableParams: {
+      productBrand: 'Juvéderm Voluma & Teosyal Kiss',
+      batchNumber: 'LOT-JUV-8921-DZ',
+      volumeMl: 1.0,
+      needleOrCannula: 'Micro-Canule 25G 50mm atraumatique'
+    },
     createdAt: new Date(Date.now() - 86400000).toISOString()
   },
   {
@@ -59,8 +87,12 @@ const SEED_APPOINTMENTS: Appointment[] = [
     treatmentZone: 'Visage & Cou',
     date: new Date().toISOString().split('T')[0], // Today
     timeSlot: '14:15',
-    notes: 'Nouvelle demande reçue depuis le site internet (à valider).',
+    notes: 'Nouvelle demande reçue depuis le site internet (à valider par téléphone).',
     status: 'pending',
+    priceDzd: 12000,
+    depositDzd: 0,
+    isPaid: false,
+    phototype: 'Phototype IV (Peau mate)',
     createdAt: new Date().toISOString()
   },
   {
@@ -75,9 +107,35 @@ const SEED_APPOINTMENTS: Appointment[] = [
     treatmentZone: 'Ovale du visage & Jawline',
     date: new Date(Date.now() + 86400000).toISOString().split('T')[0], // Tomorrow
     timeSlot: '09:30',
-    notes: 'Bilan SMAS et lifting linéaire.',
+    notes: 'Bilan SMAS et lifting linéaire confirmé.',
     status: 'confirmed',
+    priceDzd: 35000,
+    depositDzd: 10000,
+    isPaid: false,
+    paymentMethod: 'cib_dahabia',
     createdAt: new Date().toISOString()
+  },
+  {
+    id: 'appt-106',
+    reference: 'TADJ-9104',
+    patientName: 'Leila Bensalem',
+    phone: '0559 33 44 55',
+    city: 'Bab Ezzouar, Alger',
+    doctorName: 'Dr. Meriem L.',
+    specialty: 'Trichologie, Mésothérapie & PRP Capillaire',
+    treatmentName: 'Mésothérapie & PRP Capillaire',
+    treatmentZone: 'Vertex & Ligne frontale',
+    date: new Date().toISOString().split('T')[0],
+    timeSlot: '09:00',
+    notes: 'Séance 2/4. Séance réalisée avec succès, contrôle dans 3 semaines.',
+    status: 'completed',
+    priceDzd: 14000,
+    depositDzd: 14000,
+    isPaid: true,
+    paymentMethod: 'cash',
+    invoiceNumber: 'FAC-2026-0814',
+    paidAt: new Date().toISOString(),
+    createdAt: new Date(Date.now() - 86400000 * 4).toISOString()
   },
   {
     id: 'appt-105',
@@ -152,6 +210,45 @@ const SEED_PATIENTS: PatientRecord[] = [
     lastVisitDate: '2026-09-12'
   }
 ];
+
+// Tarification indicative officielle en Dinars Algériens (DZD)
+export function getTreatmentPrice(treatmentName: string, zone?: string): number {
+  const norm = (treatmentName || '').toLowerCase();
+  const zNorm = (zone || '').toLowerCase();
+
+  if (norm.includes('laser') || norm.includes('splendor')) {
+    if (zNorm.includes('corps complet')) return 25000;
+    if (zNorm.includes('jambes entières') || zNorm.includes('jambes complètes')) return 13000;
+    if (zNorm.includes('demi-jambes')) return 7000;
+    if (zNorm.includes('maillot')) return 6000;
+    if (zNorm.includes('bras')) return 6500;
+    if (zNorm.includes('aisselles')) return 3500;
+    if (zNorm.includes('visage')) return 4000;
+    return 8500;
+  }
+  if (norm.includes('hydrafacial')) {
+    if (zNorm.includes('cou') || zNorm.includes('décolleté')) return 16000;
+    if (zNorm.includes('dos')) return 18000;
+    return 12000;
+  }
+  if (norm.includes('lifu') || norm.includes('lifting')) {
+    if (zNorm.includes('double menton')) return 20000;
+    if (zNorm.includes('cou')) return 25000;
+    return 35000;
+  }
+  if (norm.includes('injection') || norm.includes('acide') || norm.includes('botox')) {
+    if (zNorm.includes('botox') || norm.includes('botox')) return 32000;
+    if (zNorm.includes('cernes')) return 30000;
+    return 28000;
+  }
+  if (norm.includes('carbon') || norm.includes('peel')) {
+    return 9000;
+  }
+  if (norm.includes('prp') || norm.includes('cheveux') || norm.includes('mésothérapie')) {
+    return 14000;
+  }
+  return 10000;
+}
 
 class ClinicApiService {
   private listeners: (() => void)[] = [];
@@ -453,6 +550,423 @@ class ClinicApiService {
       }
     }
     return false;
+  }
+
+  // Enregistrer le règlement / paiement de la séance
+  async recordPayment(
+    id: string,
+    payment: {
+      priceDzd: number;
+      depositDzd?: number;
+      paymentMethod: 'cash' | 'cib_dahabia' | 'cheque' | 'virement';
+      isPaid: boolean;
+    }
+  ): Promise<boolean> {
+    const raw = localStorage.getItem(LOCAL_STORAGE_KEY_APPTS);
+    if (raw) {
+      const list: Appointment[] = JSON.parse(raw);
+      const idx = list.findIndex((a) => a.id === id);
+      if (idx !== -1) {
+        const invNum = list[idx].invoiceNumber || `FAC-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+        list[idx] = {
+          ...list[idx],
+          priceDzd: payment.priceDzd,
+          depositDzd: payment.depositDzd ?? list[idx].depositDzd,
+          paymentMethod: payment.paymentMethod,
+          isPaid: payment.isPaid,
+          invoiceNumber: invNum,
+          paidAt: payment.isPaid ? new Date().toISOString() : undefined,
+          status: payment.isPaid ? 'completed' : list[idx].status,
+          updatedAt: new Date().toISOString()
+        };
+        localStorage.setItem(LOCAL_STORAGE_KEY_APPTS, JSON.stringify(list));
+        this.notify();
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Enregistrer les paramètres médicaux et observations cliniques par le médecin
+  async saveClinicalRecord(
+    appointmentId: string,
+    data: {
+      phototype?: string;
+      laserParams?: any;
+      injectableParams?: any;
+      facialParams?: any;
+      clinicalObservations?: string;
+      prescriptions?: string[];
+      nextRecommendedVisit?: string;
+    }
+  ): Promise<boolean> {
+    const raw = localStorage.getItem(LOCAL_STORAGE_KEY_APPTS);
+    if (raw) {
+      const list: Appointment[] = JSON.parse(raw);
+      const idx = list.findIndex((a) => a.id === appointmentId);
+      if (idx !== -1) {
+        list[idx] = {
+          ...list[idx],
+          phototype: data.phototype || list[idx].phototype,
+          laserParams: data.laserParams || list[idx].laserParams,
+          injectableParams: data.injectableParams || list[idx].injectableParams,
+          facialParams: data.facialParams || list[idx].facialParams,
+          clinicalObservations: data.clinicalObservations || list[idx].clinicalObservations,
+          prescriptions: data.prescriptions || list[idx].prescriptions,
+          nextRecommendedVisit: data.nextRecommendedVisit || list[idx].nextRecommendedVisit,
+          updatedAt: new Date().toISOString()
+        };
+        localStorage.setItem(LOCAL_STORAGE_KEY_APPTS, JSON.stringify(list));
+        this.notify();
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Impression Reçu Officiel / Facturette Caisse pour la patiente
+  printReceipt(appointment: Appointment) {
+    if (typeof window === 'undefined') return;
+    const printWindow = window.open('', '_blank', 'width=750,height=800');
+    if (!printWindow) return;
+
+    const total = appointment.priceDzd || 0;
+    const acompte = appointment.depositDzd || 0;
+    const reste = Math.max(0, total - acompte);
+    const dateFormatted = new Date(appointment.date).toLocaleDateString('fr-FR', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+
+    const paymentMethodLabel = {
+      cash: 'Espèces (Cash)',
+      cib_dahabia: 'Carte CIB / Edahabia',
+      cheque: 'Chèque Bancaire',
+      virement: 'Virement CCP / Bancaire'
+    }[appointment.paymentMethod || 'cash'];
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html lang="fr">
+      <head>
+        <meta charset="utf-8">
+        <title>Facture / Reçu — ${appointment.reference}</title>
+        <style>
+          body { font-family: 'Helvetica Neue', Arial, sans-serif; padding: 40px; color: #1c1a17; line-height: 1.5; }
+          .header { display: flex; justify-content: space-between; border-bottom: 2px solid #c49b4b; padding-bottom: 20px; margin-bottom: 25px; }
+          .clinic-name { font-size: 24px; font-weight: bold; color: #84601c; text-transform: uppercase; letter-spacing: 1px; }
+          .arabic-name { font-family: 'Georgia', serif; font-size: 18px; color: #a47c2c; }
+          .clinic-sub { font-size: 13px; color: #555; margin-top: 4px; }
+          .badge { background: #f5efe6; border: 1px solid #c49b4b; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+          .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; font-size: 14px; }
+          .box { background: #faf8f5; border: 1px solid #eee; border-radius: 8px; padding: 15px; }
+          .table { width: 100%; border-collapse: collapse; margin-bottom: 25px; }
+          .table th { background: #1c1a17; color: #e2c17d; padding: 10px; text-align: left; font-size: 13px; }
+          .table td { padding: 12px 10px; border-bottom: 1px solid #eee; font-size: 14px; }
+          .total-box { margin-left: auto; width: 280px; background: #faf8f5; border: 1px solid #c49b4b; border-radius: 8px; padding: 15px; }
+          .total-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; }
+          .total-row.final { font-size: 18px; font-weight: bold; color: #84601c; border-top: 2px solid #c49b4b; margin-top: 8px; padding-top: 8px; }
+          .footer { margin-top: 50px; text-align: center; font-size: 12px; color: #777; border-top: 1px solid #ddd; padding-top: 20px; }
+          .stamp-box { display: flex; justify-content: space-between; margin-top: 40px; }
+          .stamp { border: 2px dashed #bbb; border-radius: 8px; width: 220px; height: 100px; display: flex; align-items: center; justify-content: center; color: #999; font-size: 12px; }
+          @media print {
+            body { padding: 0; }
+            .no-print { display: none; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div>
+            <div class="clinic-name">Tadjmeel Clinica</div>
+            <div class="arabic-name">عيادة تجميل كلينيكا — الجزائر</div>
+            <div class="clinic-sub">Clinique de Médecine Esthétique & Laser Médical de Pointe</div>
+            <div class="clinic-sub">Birkhadem, Alger (Gué de Constantine) — Tél: 0552 90 79 56</div>
+          </div>
+          <div style="text-align: right;">
+            <div class="badge">REÇU DE SÉANCE / FACTURE</div>
+            <div style="margin-top: 10px; font-size: 13px; font-weight: bold;">Réf: ${appointment.reference}</div>
+            <div style="font-size: 13px; color: #666;">Facture N°: ${appointment.invoiceNumber || 'FAC-' + appointment.reference}</div>
+            <div style="font-size: 12px; color: #888;">Émis le: ${new Date().toLocaleDateString('fr-FR')}</div>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="box">
+            <strong style="color: #84601c;">PATIENTE :</strong><br>
+            <span style="font-size: 16px; font-weight: bold;">${appointment.patientName}</span><br>
+            Téléphone : ${appointment.phone}<br>
+            Ville : ${appointment.city || 'Alger'}
+          </div>
+          <div class="box">
+            <strong style="color: #84601c;">CONSULTATION / ACTE :</strong><br>
+            Praticien(ne) : <strong>${appointment.doctorName}</strong><br>
+            Date de séance : ${dateFormatted}<br>
+            Heure : ${appointment.timeSlot}
+          </div>
+        </div>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Désignation de la prestation médico-esthétique</th>
+              <th>Zone traitée</th>
+              <th>Statut</th>
+              <th style="text-align: right;">Montant</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>${appointment.treatmentName}</strong><br><span style="font-size: 12px; color: #666;">${appointment.specialty}</span></td>
+              <td>${appointment.treatmentZone || 'Zone standard'}</td>
+              <td>${appointment.isPaid ? 'RÉGLÉ' : 'Acompte / En cours'}</td>
+              <td style="text-align: right; font-weight: bold;">${total.toLocaleString('fr-FR')} DZD</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div style="font-size: 13px; color: #555; max-width: 360px;">
+            <strong>Mode de règlement :</strong> ${paymentMethodLabel}<br>
+            <strong>Garantie & Suivi :</strong> Protocole conforme aux normes d'asepsie et matériels certifiés CE / FDA. Prochaine séance conseillée selon protocole médical.
+          </div>
+          <div class="total-box">
+            <div class="total-row"><span>Total Prestation :</span><span>${total.toLocaleString('fr-FR')} DZD</span></div>
+            <div class="total-row"><span>Acompte Versé :</span><span>${acompte.toLocaleString('fr-FR')} DZD</span></div>
+            <div class="total-row final"><span>Reste à Payer :</span><span>${reste.toLocaleString('fr-FR')} DZD</span></div>
+          </div>
+        </div>
+
+        <div class="stamp-box">
+          <div class="stamp">Signature de la patiente</div>
+          <div class="stamp" style="border-color: #c49b4b; color: #84601c; font-weight: bold; text-align: center;">
+            Cachet Tadjmeel Clinica<br><span style="font-size: 10px; font-weight: normal;">Accueil & Règlement</span>
+          </div>
+        </div>
+
+        <div class="footer">
+          Tadjmeel Clinica Alger — Médecine Esthétique, Laser Splendor X, LifU LinearZ, HydraFacial MD<br>
+          Ce document tient lieu de reçu officiel de paiement de soins esthétiques.
+        </div>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+    }, 400);
+  }
+
+  // Impression Ordonnance Médicale & Soins Post-Acte par le médecin
+  printPrescription(appointment: Appointment, customPrescriptions?: string[]) {
+    if (typeof window === 'undefined') return;
+    const printWindow = window.open('', '_blank', 'width=750,height=800');
+    if (!printWindow) return;
+
+    const list = customPrescriptions && customPrescriptions.length > 0 
+      ? customPrescriptions 
+      : (appointment.prescriptions && appointment.prescriptions.length > 0 
+          ? appointment.prescriptions 
+          : [
+              'Cicaplast Baume B5+ : Application en couche fine matin et soir pendant 5 jours.',
+              'Protection Solaire Minérale SPF 50+ : Application stricte avant toute exposition lumineuse.',
+              'Éviter sauna, hammam, bains chauds et gommages agressifs pendant 72 heures.',
+              'Hydratation abondante : boire 1.5L d\'eau par jour.'
+            ]);
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html lang="fr">
+      <head>
+        <meta charset="utf-8">
+        <title>Ordonnance Médicale Post-Acte — ${appointment.patientName}</title>
+        <style>
+          body { font-family: 'Helvetica Neue', Arial, sans-serif; padding: 40px; color: #1c1a17; line-height: 1.6; }
+          .header { border-bottom: 2px solid #84601c; padding-bottom: 15px; margin-bottom: 30px; display: flex; justify-content: space-between; }
+          .doc-name { font-size: 22px; font-weight: bold; color: #84601c; }
+          .doc-spec { font-size: 13px; color: #444; margin-top: 3px; }
+          .clinic-info { text-align: right; font-size: 12px; color: #666; }
+          .meta { background: #faf8f5; border-radius: 8px; padding: 15px; margin-bottom: 30px; display: flex; justify-content: space-between; }
+          .title { text-align: center; font-size: 18px; font-weight: bold; letter-spacing: 2px; text-decoration: underline; margin-bottom: 30px; color: #1c1a17; }
+          .presc-item { margin-bottom: 18px; padding-left: 20px; position: relative; font-size: 15px; }
+          .presc-item::before { content: "•"; position: absolute; left: 0; color: #84601c; font-size: 22px; line-height: 1; top: -2px; }
+          .stamp-area { margin-top: 80px; display: flex; justify-content: flex-end; }
+          .stamp-box { border: 2px dashed #84601c; width: 260px; height: 120px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 13px; color: #84601c; font-weight: bold; }
+          .footer { margin-top: 60px; text-align: center; font-size: 11px; color: #888; border-top: 1px solid #ddd; padding-top: 15px; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div>
+            <div class="doc-name">${appointment.doctorName}</div>
+            <div class="doc-spec">Médecine Esthétique, Dermatologie Médicale & Laser</div>
+            <div class="doc-spec">Tadjmeel Clinica — Birkhadem, Alger</div>
+          </div>
+          <div class="clinic-info">
+            <strong>TADJMEEL CLINICA ALGER</strong><br>
+            Birkhadem (Gué de Constantine)<br>
+            Tél Cabinet: 0558 45 56 82
+          </div>
+        </div>
+
+        <div class="meta">
+          <div>
+            <strong>Patiente :</strong> ${appointment.patientName}<br>
+            <strong>Acte réalisé :</strong> ${appointment.treatmentName} (${appointment.treatmentZone || 'Standard'})
+          </div>
+          <div style="text-align: right;">
+            <strong>Date :</strong> ${new Date().toLocaleDateString('fr-FR')}<br>
+            <strong>Réf Dossier :</strong> ${appointment.reference}
+          </div>
+        </div>
+
+        <div class="title">ORDONNANCE & RECOMMANDATIONS POST-ACTE</div>
+
+        <div style="margin-bottom: 40px;">
+          ${list.map(item => `<div class="presc-item">${item}</div>`).join('')}
+        </div>
+
+        ${appointment.nextRecommendedVisit ? `
+          <div style="background: #fdfaf4; border-left: 4px solid #c49b4b; padding: 12px; margin-bottom: 30px; font-size: 14px;">
+            <strong>Séance de contrôle / Prochaine séance recommandée :</strong> ${appointment.nextRecommendedVisit}
+          </div>
+        ` : ''}
+
+        <div class="stamp-area">
+          <div class="stamp-box">
+            Signature & Cachet du Médecin<br>
+            <span style="font-size: 11px; font-weight: normal; margin-top: 5px;">${appointment.doctorName}</span>
+          </div>
+        </div>
+
+        <div class="footer">
+          Tadjmeel Clinica — En cas de réaction inhabituelle ou rougeur persistante > 48h, contacter immédiatement notre permanence médicale au 0552 90 79 56.
+        </div>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+    }, 400);
+  }
+
+  // Impression de la feuille de route / planning du jour pour la réceptionniste
+  printDailySchedule(appointments: Appointment[], date: string, doctorName?: string) {
+    if (typeof window === 'undefined') return;
+    const printWindow = window.open('', '_blank', 'width=800,height=900');
+    if (!printWindow) return;
+
+    const list = appointments
+      .filter(a => a.date === date && (doctorName && doctorName !== 'all' ? a.doctorName === doctorName : true))
+      .sort((a, b) => a.timeSlot.localeCompare(b.timeSlot));
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html lang="fr">
+      <head>
+        <meta charset="utf-8">
+        <title>Planning du Jour — ${date}</title>
+        <style>
+          body { font-family: 'Helvetica Neue', Arial, sans-serif; padding: 30px; font-size: 13px; color: #1c1a17; }
+          .header { display: flex; justify-content: space-between; border-bottom: 2px solid #c49b4b; padding-bottom: 15px; margin-bottom: 20px; }
+          h2 { margin: 0; color: #84601c; }
+          table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+          th { background: #1c1a17; color: #e2c17d; padding: 10px; text-align: left; font-size: 12px; }
+          td { padding: 10px; border-bottom: 1px solid #ddd; }
+          tr:nth-child(even) { background: #faf8f5; }
+          .badge { padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+          .confirmed { background: #dcfce7; color: #166534; }
+          .arrived { background: #fef08a; color: #854d0e; }
+          .in_progress { background: #dbeafe; color: #1e40af; }
+          .completed { background: #e0e7ff; color: #3730a3; }
+          .cancelled { background: #fee2e2; color: #991b1b; }
+          .pending { background: #f3f4f6; color: #4b5563; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div>
+            <h2>TADJMEEL CLINICA — PLANNING DES CABINES</h2>
+            <div>Date : <strong>${new Date(date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</strong></div>
+            <div>Praticien : <strong>${doctorName && doctorName !== 'all' ? doctorName : 'Toutes les cabines'}</strong></div>
+          </div>
+          <div style="text-align: right;">
+            <div>Total rendez-vous : <strong>${list.length}</strong></div>
+            <div style="color: #666; font-size: 11px;">Imprimé le ${new Date().toLocaleTimeString('fr-FR')}</div>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Heure</th>
+              <th>Patiente</th>
+              <th>Téléphone</th>
+              <th>Soin / Prestation</th>
+              <th>Médecin</th>
+              <th>Statut</th>
+              <th>Montant DZD</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${list.map(a => `
+              <tr>
+                <td><strong>${a.timeSlot}</strong></td>
+                <td><strong>${a.patientName}</strong></td>
+                <td>${a.phone}</td>
+                <td>${a.treatmentName}<br><span style="font-size: 11px; color: #666;">${a.treatmentZone || ''}</span></td>
+                <td>${a.doctorName}</td>
+                <td><span class="badge ${a.status}">${a.status.toUpperCase()}</span></td>
+                <td>${(a.priceDzd || 0).toLocaleString('fr-FR')} DZD</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+    }, 400);
+  }
+
+  // Ouvrir WhatsApp avec message personnalisé pré-rédigé
+  sendWhatsAppReminder(appointment: Appointment) {
+    if (typeof window === 'undefined') return;
+    // Formater numéro algérien : 0550... -> 213550...
+    let cleanPhone = appointment.phone.replace(/\D/g, '');
+    if (cleanPhone.startsWith('0')) {
+      cleanPhone = '213' + cleanPhone.substring(1);
+    } else if (!cleanPhone.startsWith('213')) {
+      cleanPhone = '213' + cleanPhone;
+    }
+
+    const dateFr = new Date(appointment.date).toLocaleDateString('fr-FR', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long'
+    });
+
+    const msg = encodeURIComponent(
+      `Bonjour ${appointment.patientName},\n\n` +
+      `C'est Tadjmeel Clinica Alger ✨\n\n` +
+      `Nous vous confirmons votre rendez-vous pour votre séance de :\n` +
+      `📌 ${appointment.treatmentName} (${appointment.treatmentZone || 'Soins'})\n` +
+      `🩺 Avec : ${appointment.doctorName}\n` +
+      `🗓 Date : ${dateFr} à ${appointment.timeSlot}\n` +
+      `📍 Adresse : Birkhadem, Alger\n\n` +
+      `En cas d'empêchement, merci de nous avertir 24h à l'avance.\n` +
+      `Au plaisir de vous accueillir chez Tadjmeel Clinica !`
+    );
+
+    window.open(`https://wa.me/${cleanPhone}?text=${msg}`, '_blank');
   }
 
   async deleteAppointment(id: string): Promise<boolean> {

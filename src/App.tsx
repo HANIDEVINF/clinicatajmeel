@@ -14,7 +14,6 @@ import { ClinicStorySection } from './components/ClinicStorySection';
 import { Footer } from './components/Footer';
 import { BookingModal } from './components/BookingModal';
 import { FloatingWhatsApp } from './components/FloatingWhatsApp';
-import { FreelancerPitchBar } from './components/FreelancerPitchBar';
 import { WorkerPortal } from './components/WorkerPortal';
 import { DoctorPortal } from './components/DoctorPortal';
 import { Language, Treatment, PortalView } from './types';
@@ -27,18 +26,54 @@ export default function App() {
   const [preselectedTreatment, setPreselectedTreatment] = useState<Treatment | null>(null);
   const [preselectedZone, setPreselectedZone] = useState<string | null>(null);
 
+  // Detect Standalone Desktop App Mode from URL query, hash, or pathname
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const checkAppMode = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const appMode = urlParams.get('app') || urlParams.get('mode');
+      const hash = window.location.hash.toLowerCase();
+      const path = window.location.pathname.toLowerCase();
+
+      // Check Worker/Receptionist App
+      if (
+        appMode === 'worker' || 
+        appMode === 'receptionist' || 
+        appMode === 'admin' ||
+        hash.includes('worker') ||
+        hash.includes('receptionist') ||
+        hash.includes('admin') ||
+        path.startsWith('/worker') ||
+        path.startsWith('/admin')
+      ) {
+        setPortalView('worker');
+        return;
+      }
+
+      // Check Doctor Clinical App
+      if (
+        appMode === 'doctor' || 
+        hash.includes('doctor') || 
+        path.startsWith('/doctor')
+      ) {
+        setPortalView('doctor');
+        const doc = urlParams.get('doctor');
+        if (doc) setActiveDoctorName(doc);
+        return;
+      }
+    };
+
+    checkAppMode();
+    window.addEventListener('hashchange', checkAppMode);
+    return () => window.removeEventListener('hashchange', checkAppMode);
+  }, []);
+
   // Sync document language and direction
   useEffect(() => {
     document.documentElement.lang = currentLang;
     document.documentElement.dir = currentLang === 'ar' ? 'rtl' : 'ltr';
   }, [currentLang]);
-
-  // Scroll to top on view switch
-  const handleSwitchView = (view: PortalView, docName?: string) => {
-    setPortalView(view);
-    if (docName) setActiveDoctorName(docName);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
 
   const handleOpenBooking = () => {
     setPreselectedTreatment(null);
@@ -57,30 +92,44 @@ export default function App() {
     setIsBookingOpen(true);
   };
 
-  // Render Worker / Receptionist Portal
+  // 1. STANDALONE WORKER / RECEPTIONIST DESKTOP APPLICATION
   if (portalView === 'worker') {
     return (
       <WorkerPortal
         currentLang={currentLang}
-        onBackToSite={() => handleSwitchView('public')}
-        onOpenDoctorPortal={(docName) => handleSwitchView('doctor', docName)}
+        onBackToSite={() => {
+          // If in standalone window or desktop app, reload to exit
+          window.location.search = '';
+          window.location.hash = '';
+          setPortalView('public');
+        }}
+        onOpenDoctorPortal={(docName) => {
+          setPortalView('doctor');
+          if (docName) setActiveDoctorName(docName);
+        }}
       />
     );
   }
 
-  // Render Doctor & Specialist Portal
+  // 2. STANDALONE DOCTOR & SPECIALIST CLINICAL DESKTOP APPLICATION
   if (portalView === 'doctor') {
     return (
       <DoctorPortal
         currentLang={currentLang}
         initialDoctorName={activeDoctorName}
-        onBackToSite={() => handleSwitchView('public')}
-        onOpenWorkerPortal={() => handleSwitchView('worker')}
+        onBackToSite={() => {
+          window.location.search = '';
+          window.location.hash = '';
+          setPortalView('public');
+        }}
+        onOpenWorkerPortal={() => {
+          setPortalView('worker');
+        }}
       />
     );
   }
 
-  // Render Public Showcase Website
+  // 3. PUBLIC SHOWCASE WEBSITE (Pure, clean visitor experience - NO staff icons/buttons)
   return (
     <div className={`min-h-screen bg-[#faf8f5] text-[#1c1b18] ${currentLang === 'ar' ? 'font-["Tajawal",sans-serif]' : 'font-["Plus_Jakarta_Sans",sans-serif]'}`}>
       {/* Navigation Header */}
@@ -88,8 +137,6 @@ export default function App() {
         currentLang={currentLang}
         onLanguageChange={setCurrentLang}
         onOpenBooking={handleOpenBooking}
-        onOpenWorkerPortal={() => handleSwitchView('worker')}
-        onOpenDoctorPortal={(doc?: string) => handleSwitchView('doctor', doc)}
       />
 
       <main id="top">
@@ -143,14 +190,8 @@ export default function App() {
         preselectedZone={preselectedZone}
       />
 
-      {/* Floating Instant WhatsApp Support */}
+      {/* Floating Instant WhatsApp Support for Patients */}
       <FloatingWhatsApp />
-
-      {/* Freelancer Pitch Bar with quick portal switcher */}
-      <FreelancerPitchBar
-        currentView={portalView}
-        onSelectView={(view) => handleSwitchView(view)}
-      />
     </div>
   );
 }

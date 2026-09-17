@@ -58,9 +58,47 @@ export interface DoctorProfile {
   languages: string[];
   experience: string;
   image: string;
+  bio?: string;
 }
 
-export type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed';
+export type AppointmentStatus = 
+  | 'pending'      // En attente de confirmation
+  | 'confirmed'    // Confirmé par tél / WhatsApp
+  | 'arrived'      // Arrivée en clinique (en salle d'attente)
+  | 'in_progress'  // En cabine de soin avec le médecin
+  | 'completed'    // Séance terminée & encaissée
+  | 'cancelled';   // Annulé (avec motif)
+
+export interface LaserParameters {
+  fluenceJcm2?: number;
+  pulseMs?: number;
+  spotMm?: string;
+  spotSizeMm?: string;
+  alexRatio?: number; // % Alex 755nm
+  yagRatio?: number;  // % Nd:YAG 1064nm
+  alexNdYagRatio?: string;
+  coolingLevel?: string | number;
+  shotsCount?: number;
+  painScore?: number; // 1-10
+}
+
+export interface InjectableParameters {
+  productBrand?: string;
+  productName?: string;
+  batchNumber?: string;
+  lotNumber?: string;
+  volumeMl?: number;
+  needleOrCannula?: string;
+  needleGauge?: string;
+  expiryDate?: string;
+}
+
+export interface FacialCareParameters {
+  peelingAcid?: string;
+  infusionSerum?: string;
+  suctionLevel?: string;
+  ledTherapyColor?: string;
+}
 
 export interface Appointment {
   id: string;
@@ -77,8 +115,38 @@ export interface Appointment {
   notes?: string;
   status: AppointmentStatus;
   cancellationReason?: string;
+  
+  // Billing & Payment
+  priceDzd?: number;
+  depositDzd?: number;
+  isPaid?: boolean;
+  paymentMethod?: 'cash' | 'cib_dahabia' | 'cheque' | 'virement';
+  invoiceNumber?: string;
+  paidAt?: string;
+
+  // Medical aesthetic chart
+  phototype?: string;
+  laserParams?: LaserParameters;
+  injectableParams?: InjectableParameters;
+  facialParams?: FacialCareParameters;
+  clinicalObservations?: string;
+  clinicalNotes?: string;
+  prescriptions?: string[];
+  nextRecommendedVisit?: string;
+
   createdAt: string;
   updatedAt?: string;
+}
+
+export interface ClinicalVisitEntry {
+  date: string;
+  doctorName: string;
+  treatmentName: string;
+  zone?: string;
+  laserParams?: LaserParameters;
+  injectableParams?: InjectableParameters;
+  notes: string;
+  prescriptions?: string[];
 }
 
 export interface PatientRecord {
@@ -91,8 +159,15 @@ export interface PatientRecord {
   phototype: string;
   medicalNotes: string;
   registeredAt: string;
+  birthYear?: string;
+  allergies?: string;
+  contraindications?: string[];
+  source?: 'instagram' | 'recommendation' | 'tiktok' | 'walk_in' | 'website';
+  consentSigned?: boolean;
   totalAppointmentsCount?: number;
   lastVisitDate?: string;
+  totalSpentDzd?: number;
+  history?: ClinicalVisitEntry[];
 }
 
 export interface ClinicSpecialty {

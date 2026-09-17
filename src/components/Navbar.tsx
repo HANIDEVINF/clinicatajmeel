@@ -8,16 +8,12 @@ interface NavbarProps {
   currentLang: Language;
   onLanguageChange: (lang: Language) => void;
   onOpenBooking: () => void;
-  onOpenWorkerPortal?: () => void;
-  onOpenDoctorPortal?: (doctorName?: string) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
   currentLang,
   onLanguageChange,
-  onOpenBooking,
-  onOpenWorkerPortal,
-  onOpenDoctorPortal
+  onOpenBooking
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -129,28 +125,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 EN
               </button>
             </div>
-
-            {/* Portal Direct Access for Clinic Team */}
-            {onOpenWorkerPortal && (
-              <div className="hidden md:flex items-center gap-1.5 pl-2 border-l border-white/15">
-                <button
-                  onClick={onOpenWorkerPortal}
-                  className="px-2.5 py-0.5 rounded-full bg-[#38332a] hover:bg-[#4a4438] text-[#f7e0b5] text-[10px] font-bold tracking-wider transition-colors border border-[#c49b4b]/40 cursor-pointer"
-                  title="Accéder au portail secrétariat et gestion des rendez-vous"
-                >
-                  Secrétariat
-                </button>
-                {onOpenDoctorPortal && (
-                  <button
-                    onClick={() => onOpenDoctorPortal()}
-                    className="px-2.5 py-0.5 rounded-full bg-white/10 hover:bg-white/20 text-[#e8dfd3] text-[10px] font-medium tracking-wider transition-colors cursor-pointer"
-                    title="Accéder à l'espace praticien et planning médical"
-                  >
-                    Espace Médecin
-                  </button>
-                )}
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -308,32 +282,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <Calendar className="w-4 h-4 text-[#d8c39e]" />
                 <span>{navLabels.book}</span>
               </button>
-
-              {/* Portal Links for Staff */}
-              {onOpenWorkerPortal && (
-                <div className="pt-2 border-t border-[#ebdcc8] grid grid-cols-2 gap-2">
-                  <button
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      onOpenWorkerPortal();
-                    }}
-                    className="py-2 px-3 rounded-lg bg-[#38332a] text-[#f7e0b5] text-[11px] font-bold text-center"
-                  >
-                    Secrétariat
-                  </button>
-                  {onOpenDoctorPortal && (
-                    <button
-                      onClick={() => {
-                        setMobileMenuOpen(false);
-                        onOpenDoctorPortal();
-                      }}
-                      className="py-2 px-3 rounded-lg bg-[#eee7db] text-[#1f1d19] text-[11px] font-semibold text-center"
-                    >
-                      Espace Médecin
-                    </button>
-                  )}
-                </div>
-              )}
             </div>
           </div>
         )}
