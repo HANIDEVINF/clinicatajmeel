@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F2DFB3" />
+      <stop offset="35%" stop-color="#D4B06A" />
+      <stop offset="70%" stop-color="#C59E52" />
+      <stop offset="100%" stop-color="#EED79D" />
+    </linearGradient>
+    <linearGradient id="darkBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#21201D" />
+      <stop offset="50%" stop-color="#181715" />
+      <stop offset="100%" stop-color="#0F0E0C" />
+    </linearGradient>
+    <filter id="subtleGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Outer background circle -->
+  <circle cx="250" cy="250" r="240" fill="url(#darkBg)" stroke="url(#goldGrad)" stroke-width="2" />
+  
+  <!-- Outer dotted decorative ring -->
+  <circle cx="250" cy="250" r="226" fill="none" stroke="url(#goldGrad)" stroke-width="1" stroke-dasharray="3 5" opacity="0.6" />
+  
+  <!-- Inner fine ring -->
+  <circle cx="250" cy="250" r="214" fill="none" stroke="url(#goldGrad)" stroke-width="1.2" opacity="0.8" />
+
+  <!-- Aesthetic Emblem in Center -->
+  <!-- Stylized Elegant Woman Profile with flowing hair & tiara -->
+  <g transform="translate(10, -5)" stroke="url(#goldGrad)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Tiara / Crown of Light Rays -->
+    <path d="M195 145 L215 110 L235 140 L255 98 L275 140 L295 110 L315 145" stroke-width="3" />
+    <circle cx="255" cy="92" r="4" fill="url(#goldGrad)" stroke="none" />
+    <circle cx="215" cy="104" r="3" fill="url(#goldGrad)" stroke="none" />
+    <circle cx="295" cy="104" r="3" fill="url(#goldGrad)" stroke="none" />
+
+    <!-- Face Silhouette & Brow -->
+    <path d="M210 155 C230 160, 260 170, 275 195 C282 208, 286 220, 280 230 C272 238, 265 240, 268 248 C272 254, 282 255, 278 266 C274 274, 262 276, 258 286 C252 300, 265 316, 272 335" stroke-width="3.2" />
+    
+    <!-- Delicate Closed Eye & Lash -->
+    <path d="M242 215 C248 222, 258 222, 264 216" stroke-width="2.2" />
+    <path d="M256 221 L258 226" stroke-width="1.8" />
+    <path d="M250 220 L249 225" stroke-width="1.8" />
+
+    <!-- Pure Botanical / Lotus Petal Flow -->
+    <path d="M180 200 C155 245, 160 305, 205 345 C235 370, 285 375, 320 345 C355 310, 360 250, 335 200" stroke-width="2.5" opacity="0.85" />
+    <path d="M195 230 C180 270, 190 315, 225 340 C255 360, 290 355, 315 325" stroke-width="1.8" opacity="0.6" />
+    
+    <!-- Laser Sparkle / Radiance Star -->
+    <g transform="translate(325, 175)">
+      <path d="M0 -16 L0 16 M-16 0 L16 0 M-8 -8 L8 8 M-8 8 L8 -8" stroke-width="2" />
+      <circle cx="0" cy="0" r="2.5" fill="url(#goldGrad)" stroke="none" />
+    </g>
+  </g>
+
+  <!-- Curved Text Top: TADJMEEL CLINICA -->
+  <path id="textArcTop" d="M 85 250 A 165 165 0 0 1 415 250" fill="none" />
+  <text font-family="'Cinzel', 'Playfair Display', serif" font-size="22" font-weight="600" letter-spacing="6" fill="url(#goldGrad)">
+    <textPath href="#textArcTop" startOffset="50%" text-anchor="middle">
+      TADJMEEL CLINICA
+    </textPath>
+  </text>
+
+  <!-- Curved Text Bottom: AESTHETIC MEDICINE &amp; LASER -->
+  <path id="textArcBottom" d="M 415 250 A 165 165 0 0 1 85 250" fill="none" />
+  <text font-family="'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="500" letter-spacing="4" fill="url(#goldGrad)" opacity="0.9">
+    <textPath href="#textArcBottom" startOffset="50%" text-anchor="middle">
+      MÉDECINE ESTHÉTIQUE &amp; LASER
+    </textPath>
+  </text>
+
+  <!-- Star separators -->
+  <circle cx="95" cy="250" r="3" fill="url(#goldGrad)" />
+  <circle cx="405" cy="250" r="3" fill="url(#goldGrad)" />
+</svg>
